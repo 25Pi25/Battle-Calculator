@@ -74,7 +74,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 67bd912abfbfd2449a39fed34fcd14a3, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.7, g: 0.7, b: 0.7, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -142,7 +142,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -196199241472413991, guid: 6164093c9aa1a9c428e7ea443bc7fdf9, type: 2}
+  - {fileID: -5904986024800740456, guid: 6164093c9aa1a9c428e7ea443bc7fdf9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -187,7 +187,7 @@ MonoBehaviour:
   m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6164093c9aa1a9c428e7ea443bc7fdf9, type: 2}
-  m_sharedMaterial: {fileID: -196199241472413991, guid: 6164093c9aa1a9c428e7ea443bc7fdf9, type: 2}
+  m_sharedMaterial: {fileID: -5904986024800740456, guid: 6164093c9aa1a9c428e7ea443bc7fdf9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

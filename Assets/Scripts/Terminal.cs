@@ -4,14 +4,29 @@ using UnityEngine;
 using TMPro;
 using System;
 using System.Data;
+using System.Linq;
+
 public class Terminal : MonoBehaviour
 {
+    public int terminalID;
     List<string> operationQueue = new List<string> { "0" };
-    void Start()
+    bool LookingForNumber() => operationQueue.Count % 2 == 0;
+    TextMeshPro operationText;
+    TextMeshPro evaluationText;
+
+    void OnValidate() {
+        TextMeshPro playerText = transform.Find("Player Indicator").gameObject.GetComponent<TextMeshPro>();
+        SpriteRenderer border = transform.Find("Border").gameObject.GetComponent<SpriteRenderer>();
+        playerText.text = "P" + terminalID;
+        //playerText.color = Player.GetPlayerColor(terminalID);
+        border.color = Player.GetPlayerColor(terminalID);
+    }
+    void Awake()
     {
         operationQueue.Capacity = 3;
+        operationText = transform.Find("Operation").gameObject.GetComponent<TextMeshPro>();
+        evaluationText = transform.Find("Evaluation").gameObject.GetComponent<TextMeshPro>();
     }
-    bool LookingForNumber() { return operationQueue.Count % 2 == 0; }
     public void AppendItem(ButtonType buttonType, string buttonValue)
     {
         string lastItem = operationQueue[operationQueue.Count - 1];
@@ -46,7 +61,7 @@ public class Terminal : MonoBehaviour
         {
             case ButtonType.NUMBER:
                 if (lastItem == "0." && buttonValue != "0")
-                    AddLastItem(buttonValue);
+                    SetLastItem("0." + buttonValue);
                 else
                     SetLastItem(buttonValue);
                 break;
@@ -101,9 +116,8 @@ public class Terminal : MonoBehaviour
                 return 1 / x;
             case "+/-":
                 return x * -1;
-            default:
-                return x;
         }
+        return x;
     }
 
     void AddToQueue(string value)
@@ -134,11 +148,12 @@ public class Terminal : MonoBehaviour
         }
     }
 
-    void SetLastItem(string value) { operationQueue[operationQueue.Count - 1] = value; }
-    void AddLastItem(string value) { operationQueue[operationQueue.Count - 1] += value; }
+    void SetLastItem(string value) => operationQueue[operationQueue.Count - 1] = value;
+    void AddLastItem(string value) => operationQueue[operationQueue.Count - 1] += value;
 
     void UpdateQueueDisplay()
     {
-        GameObject.Find("Queue").gameObject.GetComponent<TextMeshPro>().text = string.Join(" ", operationQueue);
+        operationText.text = string.Join(" ", operationQueue.Skip(1));
+        evaluationText.text = operationQueue[0];
     }
 }

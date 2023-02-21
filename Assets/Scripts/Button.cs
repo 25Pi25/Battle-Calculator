@@ -13,13 +13,16 @@ public enum ButtonType
     CLEAR,
     EQUALS
 }
+
 public class Button : MonoBehaviour
 {
-    [SerializeField] ButtonType buttonType;
-    [SerializeField] string buttonValue;
-    void OnValidate() {
+    public ButtonType buttonType;
+    public string buttonValue;
+    void OnValidate()
+    {
         transform.Find("Text").GetComponent<TextMeshPro>().text = buttonValue;
         transform.Find("Background").GetComponent<SpriteRenderer>().color = GetButtonColor();
+        transform.Find("Border").GetComponent<SpriteRenderer>().color = new Color(0.7f, 0.7f, 0.7f);
     }
     Color GetButtonColor()
     {
@@ -36,9 +39,5 @@ public class Button : MonoBehaviour
             default:
                 return new Color(1f, 1f, 1f);
         }
-    }
-    void OnMouseDown()
-    {
-        GameObject.Find("Terminal").gameObject.GetComponent<Terminal>().AppendItem(buttonType, buttonValue);
     }
 }
