@@ -4,16 +4,53 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Linq;
 
+public enum Direction
+{
+    RIGHT,
+    LEFT,
+    UP,
+    DOWN
+}
 public class Player : MonoBehaviour
 {
     static int currentID = 1;
     public int playerID;
-    public bool isDead = false;
-    [SerializeField] int x;
-    [SerializeField] int y;
-    public Terminal terminal;
+    bool isDead = false;
+    public bool IsDead
+    {
+        get { return isDead; }
+        private set
+        {
+            isDead = value;
+            spriteRenderer.color = GetPlayerColor(playerID, value);
+        }
+    }
+    float totalHealth = 200f;
+    float health = 200f;
+    public float Health
+    {
+        get { return health; }
+        set
+        {
+            this.health = Mathf.Clamp(value, 0, totalHealth);
+            terminal.SetHealth(value / totalHealth);
+
+            if (health == 0)
+            {
+                IsDead = true;
+                StartCoroutine(RevivePlayer());
+            }
+        }
+    }
+    float reviveCooldownSeconds = 5f;
+    public int x;
+    public int y;
+    Terminal terminal;
     public Button button;
+    public GameObject particlePrefab;
     PlayerInput playerInput;
+    SpriteRenderer spriteRenderer;
+    Dictionary<Direction, ParticleSystem> particleDirections = new Dictionary<Direction, ParticleSystem>();
 
     void Awake()
     {
@@ -21,30 +58,42 @@ public class Player : MonoBehaviour
         currentID++;
         x = playerID - 1;
 
-        GetComponent<SpriteRenderer>().color = GetPlayerColor(playerID);
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.color = GetPlayerColor(playerID);
         terminal = FindObjectsOfType<Terminal>().FirstOrDefault(terminal => terminal.terminalID == playerID);
         playerInput = GetComponent<PlayerInput>();
 
-        playerInput.actions["Select"].performed += ctx => terminal.AppendItem(button.buttonType, button.buttonValue);
-        playerInput.actions["Right"].performed += ctx => MoveButton(1, 0);
-        playerInput.actions["Left"].performed += ctx => MoveButton(-1, 0);
-        playerInput.actions["Up"].performed += ctx => MoveButton(0, -1);
-        playerInput.actions["Down"].performed += ctx => MoveButton(0, 1);
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            Transform particleTransform = transform.GetChild(i);
+            ParticleSystem particleSystem = particleTransform.GetComponent<ParticleSystem>();
+            particleDirections.Add((Direction)i, particleSystem);
+            var main = particleSystem.main;
+            main.startColor = GetPlayerColor(playerID);
+        }
+
+        playerInput.actions["Select"].performed += ctx => { if (!IsDead) terminal.AppendItem(button.buttonType, button.buttonValue); };
+        playerInput.actions["Right"].performed += ctx => MoveButton(Direction.RIGHT);
+        playerInput.actions["Left"].performed += ctx => MoveButton(Direction.LEFT);
+        playerInput.actions["Up"].performed += ctx => MoveButton(Direction.UP);
+        playerInput.actions["Down"].performed += ctx => MoveButton(Direction.DOWN);
     }
-    public static Color GetPlayerColor(int playerID)
+    public static Color GetPlayerColor(int playerID) => GetPlayerColor(playerID, false);
+    public static Color GetPlayerColor(int playerID, bool isDark)
     {
+        float brightness = isDark ? 0.5f : 1f;
         switch (playerID)
         {
             case 1:
-                return new Color(1f, 0f, 0f);
+                return new Color(brightness, 0f, 0f);
             case 2:
-                return new Color(0f, 0f, 1f);
+                return new Color(0f, 0f, brightness);
             case 3:
-                return new Color(1f, 1f, 0f);
+                return new Color(brightness, brightness, 0f);
             case 4:
-                return new Color(0f, 1f, 0f);
+                return new Color(0f, brightness, 0f);
         }
-        return new Color();
+        return new Color(brightness, brightness, brightness, 1f);
     }
     void Start()
     {
@@ -65,26 +114,67 @@ public class Player : MonoBehaviour
     }
     Button GetButtonFromPosition(int x, int y)
     {
-        return GameObject.Find("Buttons").transform.GetChild(x + y * 4).GetComponent<Button>();
+        return GameObject.Find("Buttons").transform.GetChild(x * GameManager.maxHeight + y).GetComponent<Button>();
     }
     // Handles player checking before setting the button
-    void SetButtonFromPosition(int x, int y)
+    public void SetButtonFromPosition(int x, int y, bool checkForPlayer = true, Direction delta = Direction.UP)
     {
-        x %= 4;
-        if (x < 0) x += 4;
-        y %= 5;
-        if (y < 0) y += 5;
+        if (x != (int)Mathf.Clamp(x, 0, GameManager.maxWidth - 1)) return;
+        if (y != (int)Mathf.Clamp(y, 0, GameManager.maxHeight - 1)) return;
         Button button = GetButtonFromPosition(x, y);
         // TODO: Change this to handle attacks/dead players
-        if (PlayerOccupyingButton(button)) return;
+        if (checkForPlayer && !MovementAllowed(button, delta)) return;
+
         this.x = x;
         this.y = y;
         this.button = button;
         transform.position = button.transform.position;
         transform.Translate(Vector3.back);
+
+        if (!IsDead) Health += 5f;
     }
-    public void MoveButton(int xDelta, int yDelta)
+    bool MovementAllowed(Button button, Direction delta)
     {
-        SetButtonFromPosition(x + xDelta, y + yDelta);
+        Player playerCollided = PlayerOccupyingButton(button);
+        if (!playerCollided) return true;
+        if (playerCollided.IsDead)
+        {
+            playerCollided.SetButtonFromPosition(x, y, checkForPlayer: false);
+            return true;
+        }
+        if (IsDead) return false;
+        if (!playerCollided.IsDead) playerCollided.Health -= 10f;
+
+        particleDirections[delta].Emit(30);
+        return false;
+    }
+    public void MoveButton(Direction delta)
+    {
+        switch (delta)
+        {
+            case Direction.RIGHT:
+                SetButtonFromPosition(x + 1, y, delta: delta);
+                break;
+            case Direction.LEFT:
+                SetButtonFromPosition(x - 1, y, delta: delta);
+                break;
+            case Direction.UP:
+                SetButtonFromPosition(x, y - 1, delta: delta);
+                break;
+            case Direction.DOWN:
+                SetButtonFromPosition(x, y + 1, delta: delta);
+                break;
+        }
+    }
+    IEnumerator RevivePlayer()
+    {
+        float reviveCooldown = reviveCooldownSeconds;
+        while (reviveCooldown > 0)
+        {
+            reviveCooldown -= Time.deltaTime;
+            yield return null;
+        }
+        IsDead = false;
+        Health = totalHealth;
     }
 }

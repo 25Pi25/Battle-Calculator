@@ -23,6 +23,7 @@ public class Button : MonoBehaviour
         transform.Find("Text").GetComponent<TextMeshPro>().text = buttonValue;
         transform.Find("Background").GetComponent<SpriteRenderer>().color = GetButtonColor();
         transform.Find("Border").GetComponent<SpriteRenderer>().color = new Color(0.7f, 0.7f, 0.7f);
+        gameObject.name = buttonValue;
     }
     Color GetButtonColor()
     {
