@@ -32,22 +32,21 @@ public class Player : MonoBehaviour
         get { return health; }
         set
         {
+            if (isDead) return;
             this.health = Mathf.Clamp(value, 0, totalHealth);
             terminal.SetHealth(value / totalHealth);
 
-            if (health == 0)
-            {
-                IsDead = true;
-                StartCoroutine(RevivePlayer());
-            }
+            if (health != 0) return;
+            IsDead = true;
+            StartCoroutine(RevivePlayer());
         }
     }
     float reviveCooldownSeconds = 5f;
     public int x;
     public int y;
+    int wins;
     Terminal terminal;
     public Button button;
-    public GameObject particlePrefab;
     PlayerInput playerInput;
     SpriteRenderer spriteRenderer;
     Dictionary<Direction, ParticleSystem> particleDirections = new Dictionary<Direction, ParticleSystem>();
@@ -72,14 +71,20 @@ public class Player : MonoBehaviour
             main.startColor = GetPlayerColor(playerID);
         }
 
-        playerInput.actions["Select"].performed += ctx => { if (!IsDead) terminal.AppendItem(button.buttonType, button.buttonValue); };
+        playerInput.actions["Select"].performed += ctx =>
+        {
+            if (IsDead) return;
+            if (button.buttonValue == "MR") Health -= 40f;
+            terminal.AppendItem(button.buttonType, button.buttonValue);
+        };
         playerInput.actions["Right"].performed += ctx => MoveButton(Direction.RIGHT);
         playerInput.actions["Left"].performed += ctx => MoveButton(Direction.LEFT);
         playerInput.actions["Up"].performed += ctx => MoveButton(Direction.UP);
         playerInput.actions["Down"].performed += ctx => MoveButton(Direction.DOWN);
     }
-    public static Color GetPlayerColor(int playerID) => GetPlayerColor(playerID, false);
-    public static Color GetPlayerColor(int playerID, bool isDark)
+    public void OnEnable() => playerInput.actions.Enable();
+    public void OnDisable() => playerInput.actions.Disable();
+    public static Color GetPlayerColor(int playerID, bool isDark = false)
     {
         float brightness = isDark ? 0.5f : 1f;
         switch (playerID)
@@ -97,20 +102,11 @@ public class Player : MonoBehaviour
     }
     void Start()
     {
-        StartCoroutine(Wait());
-    }
-    IEnumerator Wait()
-    {
-        yield return null;
         SetButtonFromPosition(x, y);
     }
     Player PlayerOccupyingButton(Button button)
     {
-        foreach (Player player in FindObjectsOfType<Player>())
-        {
-            if (player.button == button) return player;
-        }
-        return null;
+        return GameManager.players.FirstOrDefault(player => player.button == button);
     }
     Button GetButtonFromPosition(int x, int y)
     {
@@ -119,8 +115,8 @@ public class Player : MonoBehaviour
     // Handles player checking before setting the button
     public void SetButtonFromPosition(int x, int y, bool checkForPlayer = true, Direction delta = Direction.UP)
     {
-        if (x != (int)Mathf.Clamp(x, 0, GameManager.maxWidth - 1)) return;
-        if (y != (int)Mathf.Clamp(y, 0, GameManager.maxHeight - 1)) return;
+        if (x != Mathf.Clamp(x, 0, GameManager.maxWidth - 1)) return;
+        if (y != Mathf.Clamp(y, 0, GameManager.maxHeight - 1)) return;
         Button button = GetButtonFromPosition(x, y);
         // TODO: Change this to handle attacks/dead players
         if (checkForPlayer && !MovementAllowed(button, delta)) return;
@@ -131,7 +127,7 @@ public class Player : MonoBehaviour
         transform.position = button.transform.position;
         transform.Translate(Vector3.back);
 
-        if (!IsDead) Health += 5f;
+        Health += 5f;
     }
     bool MovementAllowed(Button button, Direction delta)
     {
@@ -143,7 +139,7 @@ public class Player : MonoBehaviour
             return true;
         }
         if (IsDead) return false;
-        if (!playerCollided.IsDead) playerCollided.Health -= 10f;
+        playerCollided.Health -= 10f;
 
         particleDirections[delta].Emit(30);
         return false;
@@ -165,6 +161,11 @@ public class Player : MonoBehaviour
                 SetButtonFromPosition(x, y + 1, delta: delta);
                 break;
         }
+    }
+    public void GetWin()
+    {
+        wins++;
+        terminal.UpdateWinDisplay("Wins: " + wins);
     }
     IEnumerator RevivePlayer()
     {

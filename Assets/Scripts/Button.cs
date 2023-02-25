@@ -11,7 +11,8 @@ public enum ButtonType
     DELETE,
     DECIMAL,
     CLEAR,
-    EQUALS
+    EQUALS,
+    MEMORY
 }
 
 public class Button : MonoBehaviour
@@ -37,6 +38,9 @@ public class Button : MonoBehaviour
                 return new Color(1f, 0.3f, 0.3f);
             case ButtonType.EQUALS:
                 return new Color(0f, 1f, 0f);
+            case ButtonType.MEMORY:
+                if (buttonValue == "MR") return new Color(0.6f, 0f, 0f);
+                return new Color(0.5f, 0.5f, 0.5f);
             default:
                 return new Color(1f, 1f, 1f);
         }
