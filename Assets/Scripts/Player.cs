@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System.Linq;
 
 public enum Direction
 {
@@ -62,11 +62,11 @@ public class Player : MonoBehaviour
         terminal = FindObjectsOfType<Terminal>().FirstOrDefault(terminal => terminal.terminalID == playerID);
         playerInput = GetComponent<PlayerInput>();
 
-        for (int i = 0; i < transform.childCount; i++)
+        for (int player = 0; player < transform.childCount; player++)
         {
-            Transform particleTransform = transform.GetChild(i);
+            Transform particleTransform = transform.GetChild(player);
             ParticleSystem particleSystem = particleTransform.GetComponent<ParticleSystem>();
-            particleDirections.Add((Direction)i, particleSystem);
+            particleDirections.Add((Direction)player, particleSystem);
             var main = particleSystem.main;
             main.startColor = GetPlayerColor(playerID);
         }
@@ -77,6 +77,7 @@ public class Player : MonoBehaviour
             if (button.buttonValue == "MR") Health -= 40f;
             terminal.AppendItem(button.buttonType, button.buttonValue);
         };
+        playerInput.actions["Back"].performed += ctx => terminal.AppendItem(ButtonType.DELETE, "DEL");
         playerInput.actions["Right"].performed += ctx => MoveButton(Direction.RIGHT);
         playerInput.actions["Left"].performed += ctx => MoveButton(Direction.LEFT);
         playerInput.actions["Up"].performed += ctx => MoveButton(Direction.UP);
@@ -100,8 +101,9 @@ public class Player : MonoBehaviour
         }
         return new Color(brightness, brightness, brightness, 1f);
     }
-    void Start()
+    IEnumerator Start()
     {
+        yield return null;
         SetButtonFromPosition(x, y);
     }
     Player PlayerOccupyingButton(Button button)

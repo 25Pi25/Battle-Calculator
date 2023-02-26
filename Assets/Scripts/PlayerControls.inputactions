@@ -15,6 +15,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Back",
+                    "type": "Button",
+                    "id": "1583dcb0-64f9-4107-8f2c-30effd87efba",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Right",
                     "type": "Button",
                     "id": "3a2246fb-5e2c-4ef1-9ff4-5855c73844a2",
@@ -76,6 +85,28 @@
                 },
                 {
                     "name": "",
+                    "id": "c945e12b-4dfc-4cf4-a13b-cd8b280c6d7e",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "25ef0db0-a521-4a3c-b32e-ef5e4462ec13",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "ad833aa0-4425-41df-a87d-03397f6132fc",
                     "path": "<Gamepad>/leftStick/up",
                     "interactions": "",
@@ -100,6 +131,17 @@
                     "name": "",
                     "id": "a7ac72c0-1050-4b38-ae6e-afde5c024d2c",
                     "path": "<Keyboard>/upArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Up",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d2f114b5-6c18-4bcf-bb27-1b4e1e56fd5a",
+                    "path": "<Keyboard>/w",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
@@ -142,6 +184,17 @@
                 },
                 {
                     "name": "",
+                    "id": "1dee1006-1501-466f-be25-29bd43a748a8",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Down",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "6eb52f35-903b-4cfb-833a-1f82c2555a43",
                     "path": "<Gamepad>/leftStick/right",
                     "interactions": "",
@@ -166,6 +219,17 @@
                     "name": "",
                     "id": "c01065a9-843e-415f-8d7a-9b8bcb4cea03",
                     "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Right",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ac56cf13-8f7e-45d1-9586-08fbfeeb6c2c",
+                    "path": "<Keyboard>/d",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
@@ -203,6 +267,50 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Left",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6a8d7646-ba9f-49f5-b6cd-93a32c915bc9",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Left",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2a94010b-34e7-48d5-803a-45fbe001d5e0",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Back",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d4cf9a52-a90e-463c-bf59-9a38f6a16692",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Back",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e54bc8fc-42fd-4b7c-a71a-593cd1410486",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Back",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

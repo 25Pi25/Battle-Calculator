@@ -37,6 +37,10 @@ public class Terminal : MonoBehaviour
         winText = transform.Find("Wins").gameObject.GetComponent<TextMeshPro>();
         healthBar = transform.Find("Health Bar").Find("Health Fill");
     }
+    void Start()
+    {
+        if (GameManager.players.Length < terminalID) DestroyImmediate(gameObject);
+    }
     public void AppendItem(ButtonType buttonType, string buttonValue)
     {
         string lastItem = operationQueue[operationQueue.Count - 1];
