@@ -15,7 +15,7 @@ public class StartButton : MonoBehaviour
     {
         PlayerBox[] players = FindObjectsOfType<PlayerBox>();
         if (players.Length == 0) return;
-        GameManager.devices = players.Select(x => x.playerInput.devices[0]).ToArray();
+        GameManager.devices = players.OrderBy(x => x.playerID).Select(x => x.playerInput.devices[0]).ToArray();
         SceneManager.LoadScene("Main Game");
     }
 }

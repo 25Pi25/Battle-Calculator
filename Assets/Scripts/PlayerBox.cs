@@ -9,7 +9,7 @@ public class PlayerBox : MonoBehaviour
     [SerializeField] Sprite keyboard;
     [SerializeField] Sprite gamepad;
     public PlayerInput playerInput { get; private set; }
-    int playerID;
+    public int playerID { get; private set; }
     void Awake()
     {
         transform.SetParent(GameObject.Find("Player Boxes").transform);
