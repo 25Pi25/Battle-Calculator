@@ -607,7 +607,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Press the arrow keys or select to join!
+  m_text: 'Press the arrow keys or select to join!
+
+    (Press cancel to remove the
+    controller)'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6164093c9aa1a9c428e7ea443bc7fdf9, type: 2}
   m_sharedMaterial: {fileID: -5904986024800740456, guid: 6164093c9aa1a9c428e7ea443bc7fdf9, type: 2}

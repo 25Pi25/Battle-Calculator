@@ -14,7 +14,17 @@ public class PlayerBox : MonoBehaviour
     {
         transform.SetParent(GameObject.Find("Player Boxes").transform);
         playerInput = GetComponent<PlayerInput>();
-        playerID = FindObjectsOfType<PlayerBox>().Length;
+
+        if (playerInput.devices[0] == Keyboard.current)
+        {
+            transform.Find("Icon").gameObject.GetComponent<SpriteRenderer>().sprite = keyboard;
+        }
+
+        UpdatePlayer();
+    }
+    public void UpdatePlayer()
+    {
+        playerID = transform.GetSiblingIndex() + 1;
 
         TextMeshPro playerNumber = transform.Find("Player Number").gameObject.GetComponent<TextMeshPro>();
         playerNumber.text = "Player " + playerID;
@@ -23,14 +33,12 @@ public class PlayerBox : MonoBehaviour
         TextMeshPro inputName = transform.Find("Input Name").gameObject.GetComponent<TextMeshPro>();
         inputName.text = playerInput.devices[0].ToString();
         inputName.color = Player.GetPlayerColor(playerID);
-
-        if (playerInput.devices[0] == Keyboard.current)
-        {
-            transform.Find("Icon").gameObject.GetComponent<SpriteRenderer>().sprite = keyboard;
-        }
     }
     void OnBack()
     {
+        Transform parent = transform.parent;
+        transform.SetParent(null);
+        foreach (PlayerBox playerBox in parent.GetComponentsInChildren<PlayerBox>()) playerBox.UpdatePlayer();
         DestroyImmediate(gameObject);
     }
 }
