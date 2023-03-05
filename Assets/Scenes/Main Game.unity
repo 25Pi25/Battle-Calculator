@@ -1719,6 +1719,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 5406506455092135193, guid: 616f74a398dedaa4f820455e3c4ad25d, type: 3}
+  difficultySprites: []
 --- !u!212 &646239136
 SpriteRenderer:
   m_ObjectHideFlags: 0

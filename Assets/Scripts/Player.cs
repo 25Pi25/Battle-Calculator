@@ -9,7 +9,8 @@ public enum Direction
     RIGHT,
     LEFT,
     UP,
-    DOWN
+    DOWN,
+    CENTER
 }
 public class Player : MonoBehaviour
 {
@@ -47,7 +48,7 @@ public class Player : MonoBehaviour
     int wins;
     Terminal terminal;
     public Button button;
-    PlayerInput playerInput;
+    public PlayerInput playerInput;
     SpriteRenderer spriteRenderer;
     Dictionary<Direction, ParticleSystem> particleDirections = new Dictionary<Direction, ParticleSystem>();
 
@@ -75,6 +76,7 @@ public class Player : MonoBehaviour
         {
             if (IsDead) return;
             if (button.buttonValue == "MR") Health -= 40f;
+            particleDirections[Direction.CENTER].Emit(1);
             terminal.AppendItem(button.buttonType, button.buttonValue);
         };
         playerInput.actions["Back"].performed += ctx => terminal.AppendItem(ButtonType.DELETE, "DEL");
@@ -82,6 +84,22 @@ public class Player : MonoBehaviour
         playerInput.actions["Left"].performed += ctx => MoveButton(Direction.LEFT);
         playerInput.actions["Up"].performed += ctx => MoveButton(Direction.UP);
         playerInput.actions["Down"].performed += ctx => MoveButton(Direction.DOWN);
+    }
+    void OnDestroy()
+    {
+        playerInput.actions["Select"].performed -= ctx =>
+        {
+            if (IsDead) return;
+            if (button.buttonValue == "MR") Health -= 40f;
+            particleDirections[Direction.CENTER].Emit(1);
+            terminal.AppendItem(button.buttonType, button.buttonValue);
+        };
+        playerInput.actions["Back"].performed -= ctx => terminal.AppendItem(ButtonType.DELETE, "DEL");
+        playerInput.actions["Right"].performed -= ctx => MoveButton(Direction.RIGHT);
+        playerInput.actions["Left"].performed -= ctx => MoveButton(Direction.LEFT);
+        playerInput.actions["Up"].performed -= ctx => MoveButton(Direction.UP);
+        playerInput.actions["Down"].performed -= ctx => MoveButton(Direction.DOWN);
+        playerInput.DeactivateInput();
     }
     public void OnEnable() => playerInput.actions.Enable();
     public void OnDisable() => playerInput.actions.Disable();

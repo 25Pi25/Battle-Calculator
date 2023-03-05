@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using UnityEditor;
 using TMPro;
 public class GameManager : MonoBehaviour
 {
@@ -15,6 +16,17 @@ public class GameManager : MonoBehaviour
     public static InputDevice[] devices;
     Transform buttons;
     static TextMeshPro number;
+    [SerializeField] Sprite[] difficultySprites;
+    static int difficulty = 1;
+    public static int Difficulty
+    {
+        get => difficulty;
+        set
+        {
+            difficulty = value;
+            GameObject.FindObjectOfType<Difficulter>().SetSprite(value);
+        }
+    }
     void Awake()
     {
         buttons = GameObject.Find("Buttons").transform;
@@ -33,19 +45,19 @@ public class GameManager : MonoBehaviour
     static void RandomizeNumber()
     {
         float newNumber;
-        switch (Random.Range(0, 3))
+        switch (Random.Range(0, difficulty))
         {
             case 0:
-                newNumber = Random.Range(10, 99);
+                newNumber = Random.Range(10, 100);
                 break;
             case 1:
-                newNumber = Random.Range(100, 999);
+                newNumber = Random.Range(100, 1000);
                 break;
             default:
-                newNumber = Random.Range(1000, 9999);
+                newNumber = Random.Range(1000, 10000);
                 break;
         }
-        if (Random.Range(0, 5) == 0) newNumber *= -1f;
+        if (Random.Range(0, 15 / difficulty + 1) == 0) newNumber *= -1f;
         number.text = newNumber.ToString();
         correctNumber = newNumber;
     }
@@ -62,11 +74,11 @@ public class GameManager : MonoBehaviour
         RandomizeNumber();
         EnableAll();
     }
-    static void EnableAll()
+    public static void EnableAll()
     {
         foreach (Player player in players) player.OnEnable();
     }
-    static void DisableAll()
+    public static void DisableAll()
     {
         foreach (Player player in players) player.OnDisable();
     }
