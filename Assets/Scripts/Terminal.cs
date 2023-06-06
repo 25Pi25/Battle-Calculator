@@ -8,8 +8,8 @@ using System.Linq;
 
 public class Terminal : MonoBehaviour
 {
-    public int terminalID;
-    public Transform healthBar;
+    public int terminalID { get; private set; }
+    public Transform healthBar { get; private set; }
     List<string> operationQueue = new List<string> { "0" };
     string memory = "0";
     bool LookingForNumber() => operationQueue.Count % 2 == 0;
@@ -19,13 +19,13 @@ public class Terminal : MonoBehaviour
     void OnValidate()
     {
         TextMeshPro playerText = transform.Find("Player Indicator").gameObject.GetComponent<TextMeshPro>();
+        playerText.text = "P" + terminalID;
+        playerText.color = Player.GetPlayerColor(terminalID, true);
         SpriteRenderer border = transform.Find("Border").gameObject.GetComponent<SpriteRenderer>();
+        border.color = Player.GetPlayerColor(terminalID);
         TextMeshPro winText = transform.Find("Wins").gameObject.GetComponent<TextMeshPro>();
         winText.color = Player.GetPlayerColor(terminalID, true);
         Transform healthBar = transform.Find("Health Bar");
-        playerText.text = "P" + terminalID;
-        playerText.color = Player.GetPlayerColor(terminalID, true);
-        border.color = Player.GetPlayerColor(terminalID);
         healthBar.Find("Health Border").GetComponent<SpriteRenderer>().color = Player.GetPlayerColor(terminalID);
         healthBar.Find("Health Fill").GetComponent<SpriteRenderer>().color = Player.GetPlayerColor(terminalID);
         healthBar.Find("Health Background").GetComponent<SpriteRenderer>().color = Player.GetPlayerColor(terminalID);
@@ -107,15 +107,12 @@ public class Terminal : MonoBehaviour
         switch (buttonType)
         {
             case ButtonType.NUMBER:
-                if (lastItem == "0." && buttonValue != "0")
-                    SetLastItem("0." + buttonValue);
-                else
-                    SetLastItem(buttonValue);
+                if (lastItem == "0." && buttonValue != "0") SetLastItem("0." + buttonValue);
+                else SetLastItem(buttonValue);
                 break;
 
             case ButtonType.FUNCTION:
-                if (lastItem == "0.")
-                    SetLastItem("0");
+                if (lastItem == "0.") SetLastItem("0");
                 AddToQueue(buttonValue);
                 break;
 
@@ -124,12 +121,9 @@ public class Terminal : MonoBehaviour
                 break;
 
             case ButtonType.DELETE:
-                if (operationQueue.Count == 1)
-                    operationQueue[0] = "0";
-                else if (lastItem != "0")
-                    SetLastItem("0");
-                else
-                    operationQueue.RemoveAt(operationQueue.Count - 1);
+                if (operationQueue.Count == 1) operationQueue[0] = "0";
+                else if (lastItem != "0") SetLastItem("0");
+                else operationQueue.RemoveAt(operationQueue.Count - 1);
                 break;
         }
     }
@@ -195,32 +189,17 @@ public class Terminal : MonoBehaviour
         }
         return 0;
     }
-    float ApplyInstantFunction(string buttonValue, float x)
+    float ApplyInstantFunction(string buttonValue, float x) => buttonValue switch
     {
-        switch (buttonValue)
-        {
-            case "1/x":
-                if (x == 0) return HandleIllegalOperation();
-                return 1 / x;
-            case "+/-":
-                return x * -1;
-            case "round":
-                return Mathf.Round(x);
-            case "x^2":
-                return Mathf.Pow(x, 2);
-            case "2^x":
-                return Mathf.Pow(2, x);
-            case "sqrtx":
-                if (x < 0) return HandleIllegalOperation();
-                return Mathf.Sqrt(x);
-        }
-        return x;
-    }
-    float FilterValue(float value)
-    {
-        if (float.IsNaN(value) || float.IsSubnormal(value)) return 0;
-        return Mathf.Clamp(value, -1_000_000, 1_000_000);
-    }
+        "1/x" => x != 0 ? 1 / x : HandleIllegalOperation(),
+        "+/-" => x * -1,
+        "round" => Mathf.Round(x),
+        "x^2" => Mathf.Pow(x, 2),
+        "2^x" => Mathf.Pow(2, x),
+        "sqrtx" => x >= 0 ? Mathf.Sqrt(x) : HandleIllegalOperation(),
+        _ => x
+    };
+    float FilterValue(float value) => float.IsNaN(value) || float.IsSubnormal(value) ? 0 : Mathf.Clamp(value, -1_000_000, 1_000_000);
     float HandleIllegalOperation()
     {
         return 0;

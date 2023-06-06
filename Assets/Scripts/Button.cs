@@ -26,23 +26,13 @@ public class Button : MonoBehaviour
         transform.Find("Border").GetComponent<SpriteRenderer>().color = new Color(0.7f, 0.7f, 0.7f);
         gameObject.name = buttonValue;
     }
-    Color GetButtonColor()
+    Color GetButtonColor() => buttonType switch
     {
-        switch (buttonType)
-        {
-            case ButtonType.FUNCTION:
-                return new Color(0.3f, 0.3f, 1f);
-            case ButtonType.INSTANT_FUNCTION:
-                return new Color(0f, 0.9f, 0.9f);
-            case ButtonType.CLEAR:
-                return new Color(1f, 0.3f, 0.3f);
-            case ButtonType.EQUALS:
-                return new Color(0f, 1f, 0f);
-            case ButtonType.MEMORY:
-                if (buttonValue == "MR") return new Color(0.6f, 0f, 0f);
-                return new Color(0.5f, 0.5f, 0.5f);
-            default:
-                return new Color(1f, 1f, 1f);
-        }
-    }
+        ButtonType.FUNCTION => new Color(0.3f, 0.3f, 1f),
+        ButtonType.INSTANT_FUNCTION => new Color(0f, 0.9f, 0.9f),
+        ButtonType.CLEAR => new Color(1f, 0.3f, 0.3f),
+        ButtonType.EQUALS => new Color(0f, 1f, 0f),
+        ButtonType.MEMORY => buttonValue == "MR" ? new Color(0.6f, 0f, 0f) : new Color(0.5f, 0.5f, 0.5f),
+        _ => new Color(1f, 1f, 1f)
+    };
 }
